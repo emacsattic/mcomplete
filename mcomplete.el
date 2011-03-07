@@ -3,7 +3,7 @@
 ;; Copyright (C) 2000 Yuji 'bmonkey' Minejima <ggb01164@nifty.ne.jp>
 
 ;; Author: Yuji Minejima <ggb01164@nifty.ne.jp>
-;; $Revision: 1.5 $
+;; $Revision: 1.6 $
 ;; Keywords: local, help, abbrev
 
 ;; This file is NOT part of GNU Emacs.
@@ -283,6 +283,13 @@
 
 
 ;;; Change Log:
+
+;; Version 1.6 (07 Mar 2011)
+;; Ze'ev Clementson informed me that `make-local-hook' was no longer needed
+;; and not supported in Emacs24.
+;; Thus, change to call `make-local-hook' only if (fboundp 'make-local-hook)
+;; returns true.
+
 
 ;; Version 1.5 (21 Aug 2004)
 ;;  * Apply a patch from J.D. Smith which changes the way completion candidates
@@ -629,14 +636,16 @@ These bindings are used when an exact match is required."
 (defun mcomplete-setup-command-hooks ()
   "Setup `pre-command-hook' and `post-command-hook' for `mcomplete-mode'."
   ;; setup PRE-COMMAND-HOOK
-  (make-local-hook 'pre-command-hook)
+  (if (fboundp 'make-local-hook)
+      (make-local-hook 'pre-command-hook))
   (add-hook 'pre-command-hook
             #'(lambda () (run-hooks (mcomplete-get :pre-command-hook)))
             nil                         ; nil means prepend
             t)                          ; t means a local hook
 
   ;; setup POST-COMMAND-HOOK
-  (make-local-hook 'post-command-hook)
+  (if (fboundp 'make-local-hook)
+      (make-local-hook 'post-command-hook))
   (add-hook 'post-command-hook
             #'(lambda () (run-hooks (mcomplete-get :post-command-hook)))
             nil                         ; nil means prepend
